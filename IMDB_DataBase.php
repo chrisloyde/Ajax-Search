@@ -29,17 +29,28 @@
 		 * movies_genres
 		 * roles
 		*/
-		public function search($movie) {
+		public function searchMovie($movie) {
 			$movie = $movie . "%";
 			$stmt = $this->DB->prepare("SELECT * FROM movies WHERE name LIKE :movie LIMIT 50");
 			$stmt->bindParam('movie', $movie);
 			$stmt->execute();
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 		}
+		public function searchActor($first, $last) {
+			$first = $first . "%";
+			$last = $last . "%";
+			$stmt = $this->DB->prepare("SELECT * FROM actors WHERE last_name LIKE :last AND first_name LIKE :first LIMIT 50");
+			$stmt->bindParam('first', $first);
+			$stmt->bindParam('last', $last);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		}
+
+
 		
 	} // end class DatabaseAdaptor
 
  $DB = new DatabaseAdaptor();
-
+ //$movieArray = $DB->searchActor("", "t");
+ //var_dump($movieArray);
 	?>

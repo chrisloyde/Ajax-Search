@@ -5,25 +5,52 @@
     <title>IMDB Movie Search</title>
 </head>
 <body>
-Enter a movie title
-<input type="text" id="substring" onkeyup="getMovies()">
-<div id="divToChange">?</div>
+
+Movie Title:<input type="text" id="movie" onchange="getMovies()"><br/>
+Actor Name:<input type="text" id="actorname" onchange="getActors()">Last Name, First Name<br/>
+<div id="divMovie">?</div>
+<div id="divActor">?</div>
 
 <script>
     function getMovies() {
-        var sub = document.getElementById("substring").value;
+        var sub = document.getElementById("movie").value;
         var xhttp = new XMLHttpRequest();
         var str = "<br>Results for string "+sub+"<br><br>";
-        xhttp.open("GET", "controller.php?substring="+sub, true);
+        xhttp.open("GET", "controller.php?movie="+sub, true);
         xhttp.send();
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState==4 && xhttp.status==200) {
                 var array = JSON.parse(xhttp.responseText);
                 for (i = 0; i < array.length; i++) {
-                    str += array[i]["name"] + '<br>';
+                    str += array[i]["id"]+ " " + array[i]["name"] + '<br>';
                 }
             }
-            document.getElementById("divToChange").innerHTML = str;
+            document.getElementById("divMovie").innerHTML = str;
+        }
+    }
+    function getActors() {
+        var sub = document.getElementById("actorname").value;
+        var nameArray = sub.split(", ");
+        if (nameArray.length == 2) {
+            var lastName = nameArray[0];
+            var firstName = nameArray[1];
+        } else {
+            var lastName = nameArray[0];
+            var firstName = "";
+        }
+        var xhttp = new XMLHttpRequest();
+        var str = "<br>Results for string "+sub+"<br><br>";
+        var linkStr = "controller.php?firstname=" + firstName + "&lastname=" + lastName;
+        xhttp.open("GET", linkStr, true);
+        xhttp.send();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState==4 && xhttp.status==200) {
+                var array = JSON.parse(xhttp.responseText);
+                for (i = 0; i < array.length; i++) {
+                    str += array[i]["first_name"] + " " + array[i]["last_name"] + '<br>';
+                }
+            }
+            document.getElementById("divActor").innerHTML = str;
         }
     }
 
