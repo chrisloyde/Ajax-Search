@@ -6,17 +6,45 @@
 </head>
 <body>
 
-Movie Title:<input type="text" id="movie" onchange="getMovies()"><br/>
-Actor Name:<input type="text" id="actorname" onchange="getActors()">Last Name, First Name<br/>
+Movie Title:<input type="text" id="movie" onchange="combinedSearch()"><br/>
+Actor Name:<input type="text" id="actorname" onchange="combinedSearch()">Last Name, First Name<br/>
+<div id="combined">COMBINED</div>
 <div id="divMovie">?</div>
 <div id="divActor">?</div>
 
 <script>
+    function combinedSearch() {
+        var movie = document.getElementById("movie").value;
+        var name = document.getElementById("actorname").value;
+        name = name.split(", ");
+
+        if (name.length == 2) {
+            var lastName = name[0];
+            var firstName = name[1];
+        } else {
+            var lastName = name[0];
+            var firstName = "";
+        }
+        var xhttp = new XMLHttpRequest();
+        var linkStr = "controller.php?movie="+movie+"&firstname=" + firstName + "&lastname=" + lastName;
+        var str;
+        xhttp.open("GET", linkStr, true);
+        xhttp.send();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                var array = JSON.parse(xhttp.responseText);
+                for (i = 0; i < array.length; i++) {
+                    str += array[i]['moviename'] + "<br/>" + array[i]['actorlist'] + "<br/>";
+                }
+            }
+            document.getElementById("combined").innerHTML = str;
+        }
+    }
     function getMovies() {
         var sub = document.getElementById("movie").value;
         var xhttp = new XMLHttpRequest();
         var str = "<br>Results for string "+sub+"<br><br>";
-        xhttp.open("GET", "controller.php?movie="+sub, true);
+
         xhttp.send();
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState==4 && xhttp.status==200) {

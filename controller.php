@@ -1,6 +1,14 @@
 <?php
 require_once './IMDB_DataBase.php';
 
+$movie = $_GET['movie'];
+//$first = $_GET['firstname'];
+//$last = $_GET['lastname'];
+
+$array = $DB->getMatchingMovies($movie);
+echo json_encode($array);
+
+/*
 if (isset($_GET['movie'])) {
     $sub = $_GET['movie'];
     $array = $DB->searchMovie($sub);
@@ -24,4 +32,5 @@ else if (isset($_GET['firstname']) || isset($_GET['lastname'])) {
         echo json_encode($array);
     }
 }
+*/
 ?>
