@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IMDB Movie Search</title>
+</head>
+<body>
+Enter a movie title
+<input type="text" id="substring" onkeyup="getMovies()">
+<div id="divToChange">?</div>
+
+<script>
+    function getMovies() {
+        var sub = document.getElementById("substring").value;
+        var xhttp = new XMLHttpRequest();
+        var str = "<br>Results for string "+sub+"<br><br>";
+        xhttp.open("GET", "controller.php?substring="+sub, true);
+        xhttp.send();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState==4 && xhttp.status==200) {
+                var array = JSON.parse(xhttp.responseText);
+                for (i = 0; i < array.length; i++) {
+                    str += array[i]["name"] + '<br>';
+                }
+            }
+            document.getElementById("divToChange").innerHTML = str;
+        }
+    }
+
+</script>
+</body>
+</html>
