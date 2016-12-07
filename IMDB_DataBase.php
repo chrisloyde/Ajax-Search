@@ -38,15 +38,6 @@
 			$stmt->execute();
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 		}
-		public function searchActor($first, $last) {
-			$first = $first . "%";
-			$last = $last . "%";
-			$stmt = $this->DB->prepare("SELECT id FROM actors WHERE last_name LIKE :last AND first_name LIKE :first LIMIT 50");
-			$stmt->bindParam('first', $first);
-			$stmt->bindParam('last', $last);
-			$stmt->execute();
-			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		}
 		public function searchRoles($movie_id, $actor_id) {
 			$stmt = $this->DB->prepare("SELECT * FROM roles WHERE actor_id = :actor AND movie_id = :movie LIMIT 50");
 			$stmt->bindParam('actor', $actor_id);
@@ -79,20 +70,24 @@
 			return $row["year"];
 		}
 
-		public function getMatchingMovies($movie) {
+		public function getMatchingMovies($movie, $first, $last) {
+			$first = $first . "%";
+			$last = $last . "%";
 			$movieID = $this->searchMovie($movie);
+			//$actorID = $this->searchActor($first, $last);
 			$movieIDArray = array(array ("moviename", "actorlist", "year"));
 			for ($i = 0; $i < count($movieID); $i++) {
 				$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
-				$movieIDArray[$i]["actorlist"] =  $this->getActorsFromMovie($movieID[$i]["id"]);
 				$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
+				$movieIDArray[$i]["actorlist"] =  $this->getActorsFromMovie($movieID[$i]["id"], $first, $last);
 			}
 			return array_filter($movieIDArray);
 		}
 
-		public function getActorsFromMovie($movieID) {
-			//$movieID = $this->searchMovie($movie)[0]["id"];
-			$stmt = $this->DB->prepare("SELECT actor_id FROM roles WHERE movie_id=:id");
+		public function getActorsFromMovie($movieID, $first, $last) {
+			$stmt = $this->DB->prepare("SELECT actor_id FROM roles JOIN actors ON roles.actor_id = actors.id WHERE roles.movie_id=:id AND actors.last_name LIKE :last AND actors.first_name LIKE :first");
+			$stmt->bindParam('first', $first);
+			$stmt->bindParam('last', $last);
 			$stmt->bindParam('id', $movieID);
 			$stmt->execute();
 			$array = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -102,13 +97,29 @@
 			}
 			return $actorNameArray;
 		}
+		public function searchActor($first, $last) {
+			$first = $first . "%";
+			$last = $last . "%";
+			$stmt = $this->DB->prepare("SELECT id FROM actors WHERE last_name LIKE :last AND first_name LIKE :first LIMIT 50");
+			$stmt->bindParam('first', $first);
+			$stmt->bindParam('last', $last);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		}
 
+		public function combinedSearch($movie, $firstname, $lastname) {
+			$movieIDarray = $this->getMatchingMovies($movie);
+			$combinedArray = array(array("moviename", "actorlist", "year"));
+			for ($i = 0; $i < count($movieIDarray); $i++) {
+
+			}
+		}
 
 
 
 	} // end class DatabaseAdaptor
 
  $DB = new DatabaseAdaptor();
- //$movieArray = $DB->getMatchingMovies("red");
+ //$movieArray = $DB->getMatchingMovies("red", "a", "b");
  //var_dump($movieArray);
 	?>
