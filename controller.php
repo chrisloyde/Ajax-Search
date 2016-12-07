@@ -5,7 +5,9 @@ $movie = $_GET['movie'];
 $first = $_GET['firstname'];
 $last = $_GET['lastname'];
 
-$array = $DB->getMatchingMovies($movie, $first, $last);
-echo json_encode($array);
+if ($movie !== "" || $first !== "" || $last != "") {
+    $array = $DB->getMatchingMovies($movie, $first, $last);
+    echo json_encode($array);
+}
 
 ?>

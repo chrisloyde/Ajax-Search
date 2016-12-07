@@ -5,14 +5,12 @@
     <title>IMDB Movie Search</title>
 </head>
 <body>
-
-Movie Title:<input type="text" id="movie" onkeyup="combinedSearch()"><br/>
-Actor Name:<input type="text" id="actorname" onkeyup="combinedSearch()">Last Name, First Name<br/>
+<h2>AJAX Movie and Actor Search</h2>
+Movie Title:<input type="text" id="movie" onkeyup="combinedSearch()">
+Actor Name:<input type="text" id="actorname" placeholder="Last Name, First Name" onkeyup="combinedSearch()">(Last Name, First Name)<br/>
 <table id="combined">
 </table>
-<div id="divMovie">?</div>
-<div id="divActor">?</div>
-
+<h4>By: Chris Peterson and Beau Mejias-Brean </h4>
 <script>
     function combinedSearch() {
         var movie = document.getElementById("movie").value;
@@ -35,12 +33,20 @@ Actor Name:<input type="text" id="actorname" onkeyup="combinedSearch()">Last Nam
             if (xhttp.readyState == 4 && xhttp.status == 200) {
                 var array = JSON.parse(xhttp.responseText);
                 for (i = 0; i < array.length; i++) {
-                    for (j = 0; j < array[i]['actorlist'].length; j++) {
-                        str+="<tr>";
-                        str += "<td>" + array[i]['moviename']+"</td>"
-                        str += "<td>" + array[i]['actorlist'][j]+"</td>";
-                        str += "<td>"+ array[i]['year']+"</td>";
-                        str+="</tr>";
+                    if (movie !== "") {
+                        for (j = 0; j < array[i]['actorlist'].length; j++) {
+                            str += "<tr>";
+                            str += "<td>" + array[i]['moviename'] + "</td>"
+                            str += "<td>" + array[i]['actorlist'][j] + "</td>";
+                            str += "<td>" + array[i]['year'] + "</td>";
+                            str += "</tr>";
+                        }
+                    } else {
+                        str += "<tr>";
+                        str += "<td>" + array[i]['moviename'] + "</td>"
+                        str += "<td>" + array[i]['actorlist'] + "</td>";
+                        str += "<td>" + array[i]['year'] + "</td>";
+                        str += "</tr>";
                     }
                 }
             }

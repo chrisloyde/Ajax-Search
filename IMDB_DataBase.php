@@ -77,9 +77,18 @@
 			//$actorID = $this->searchActor($first, $last);
 			$movieIDArray = array(array ("moviename", "actorlist", "year"));
 			for ($i = 0; $i < count($movieID); $i++) {
-				$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
-				$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
-				$movieIDArray[$i]["actorlist"] =  $this->getActorsFromMovie($movieID[$i]["id"], $first, $last);
+				if ($movie !== "") {
+					$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
+					$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
+					$movieIDArray[$i]["actorlist"] = $this->getActorsFromMovie($movieID[$i]["id"], $first, $last);
+				} else {
+					$actorArray = $this->searchActor($first, $last);
+					for ($j = 0; $j < count($actorArray); $j++) {
+						$movieIDArray[$j]["moviename"] = $this->getMovieFromID($actorArray[$j]['movieid']);
+						$movieIDArray[$j]['actorlist'] = $actorArray[$j]["actorname"];
+						$movieIDArray[$j]["year"] = $this->getMovieYearFromID($actorArray[$j]['movieid']);
+					}
+				}
 			}
 			return array_filter($movieIDArray);
 		}
@@ -100,26 +109,21 @@
 		public function searchActor($first, $last) {
 			$first = $first . "%";
 			$last = $last . "%";
-			$stmt = $this->DB->prepare("SELECT id FROM actors WHERE last_name LIKE :last AND first_name LIKE :first LIMIT 50");
+			$stmt = $this->DB->prepare("SELECT * FROM actors JOIN roles ON roles.actor_id = actors.id WHERE actors.last_name LIKE :last AND actors.first_name LIKE :first LIMIT 50");
 			$stmt->bindParam('first', $first);
 			$stmt->bindParam('last', $last);
 			$stmt->execute();
-			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		}
-
-		public function combinedSearch($movie, $firstname, $lastname) {
-			$movieIDarray = $this->getMatchingMovies($movie);
-			$combinedArray = array(array("moviename", "actorlist", "year"));
-			for ($i = 0; $i < count($movieIDarray); $i++) {
-
+			$array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$dataArray = array(array("actorname", "movieid"));
+			for ($i = 0; $i < count($array); $i++) {
+				$dataArray[$i]["actorname"] = $this->getActorFromID($array[$i]["actor_id"]);
+				$dataArray[$i]["movieid"] = $array[$i]["movie_id"];
 			}
+			return $dataArray;
 		}
-
-
-
 	} // end class DatabaseAdaptor
 
  $DB = new DatabaseAdaptor();
- //$movieArray = $DB->getMatchingMovies("red", "a", "b");
+ //$movieArray = $DB->getMatchingMovies("", "s", "w");
  //var_dump($movieArray);
 	?>
