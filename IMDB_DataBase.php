@@ -71,12 +71,21 @@
 			return $row["name"];
 		}
 
+		public function getMovieYearFromID($id) {
+			$stmt = $this->DB->prepare("SELECT * FROM movies WHERE id=:id LIMIT 50");
+			$stmt->bindParam('id', $id);
+			$stmt->execute();
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			return $row["year"];
+		}
+
 		public function getMatchingMovies($movie) {
 			$movieID = $this->searchMovie($movie);
-			$movieIDArray = array(array ("moviename", "actorlist"));
+			$movieIDArray = array(array ("moviename", "actorlist", "year"));
 			for ($i = 0; $i < count($movieID); $i++) {
 				$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
 				$movieIDArray[$i]["actorlist"] =  $this->getActorsFromMovie($movieID[$i]["id"]);
+				$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
 			}
 			return array_filter($movieIDArray);
 		}
