@@ -36,7 +36,12 @@
 			$stmt = $this->DB->prepare("SELECT id FROM movies WHERE name LIKE :movie LIMIT 50");
 			$stmt->bindParam('movie', $movie);
 			$stmt->execute();
-			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			if (count($array) > 0) {
+				return $array;
+			} else {
+				return null;
+			}
 		}
 		public function searchRoles($movie_id, $actor_id) {
 			$stmt = $this->DB->prepare("SELECT * FROM roles WHERE actor_id = :actor AND movie_id = :movie LIMIT 50");
@@ -76,17 +81,21 @@
 			$movieID = $this->searchMovie($movie);
 			//$actorID = $this->searchActor($first, $last);
 			$movieIDArray = array(array ("moviename", "actorlist", "year"));
-			for ($i = 0; $i < count($movieID); $i++) {
-				if ($movie !== "") {
-					$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
-					$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
-					$movieIDArray[$i]["actorlist"] = $this->getActorsFromMovie($movieID[$i]["id"], $first, $last);
-				} else {
-					$actorArray = $this->searchActor($first, $last);
-					for ($j = 0; $j < count($actorArray); $j++) {
-						$movieIDArray[$j]["moviename"] = $this->getMovieFromID($actorArray[$j]['movieid']);
-						$movieIDArray[$j]['actorlist'] = $actorArray[$j]["actorname"];
-						$movieIDArray[$j]["year"] = $this->getMovieYearFromID($actorArray[$j]['movieid']);
+			if ($movieID != null) {
+				for ($i = 0; $i < count($movieID); $i++) {
+					if ($movie !== "") {
+						$movieIDArray[$i]["moviename"] = $this->getMovieFromID($movieID[$i]["id"]);
+						$movieIDArray[$i]["year"] = $this->getMovieYearFromID($movieID[$i]["id"]);
+						$movieIDArray[$i]["actorlist"] = $this->getActorsFromMovie($movieID[$i]["id"], $first, $last);
+					} else {
+						$actorArray = $this->searchActor($first, $last);
+						if ($actorArray != null) {
+							for ($j = 0; $j < count($actorArray); $j++) {
+								$movieIDArray[$j]["moviename"] = $this->getMovieFromID($actorArray[$j]['movieid']);
+								$movieIDArray[$j]['actorlist'] = $actorArray[$j]["actorname"];
+								$movieIDArray[$j]["year"] = $this->getMovieYearFromID($actorArray[$j]['movieid']);
+							}
+						}
 					}
 				}
 			}
@@ -114,16 +123,20 @@
 			$stmt->bindParam('last', $last);
 			$stmt->execute();
 			$array = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			$dataArray = array(array("actorname", "movieid"));
-			for ($i = 0; $i < count($array); $i++) {
-				$dataArray[$i]["actorname"] = $this->getActorFromID($array[$i]["actor_id"]);
-				$dataArray[$i]["movieid"] = $array[$i]["movie_id"];
+			if (count($array) > 0) {
+				$dataArray = array(array("actorname", "movieid"));
+				for ($i = 0; $i < count($array); $i++) {
+					$dataArray[$i]["actorname"] = $this->getActorFromID($array[$i]["actor_id"]);
+					$dataArray[$i]["movieid"] = $array[$i]["movie_id"];
+				}
+			} else {
+				return null;
 			}
 			return $dataArray;
 		}
 	} // end class DatabaseAdaptor
 
  $DB = new DatabaseAdaptor();
- //$movieArray = $DB->getMatchingMovies("", "s", "w");
+ $movieArray = $DB->getMatchingMovies("", "chrisggtopher", "lee");
  //var_dump($movieArray);
 	?>

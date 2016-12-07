@@ -33,7 +33,7 @@ Actor Name:<input type="text" id="actorname" placeholder="Last Name, First Name"
             if (xhttp.readyState == 4 && xhttp.status == 200) {
                 var array = JSON.parse(xhttp.responseText);
                 for (i = 0; i < array.length; i++) {
-                    if (movie !== "") {
+                    if (movie !== "" && array[i]['actorlist'] != null) {
                         for (j = 0; j < array[i]['actorlist'].length; j++) {
                             str += "<tr>";
                             str += "<td>" + array[i]['moviename'] + "</td>"
