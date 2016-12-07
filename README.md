@@ -13,6 +13,4 @@ USE imdb
 SOURCE imdb.sql
 ~~~~
 **Todo List**<br/>
-* Create a method in the PDO object which combines the movies and actors tables and searches both at the same time.
-* Style with a table that displays title | actor | year.
-
+* Completed and turned in

@@ -4,10 +4,7 @@
  //header('Content-Type: application/json');
 
 	class DatabaseAdaptor {
-		// The instance variable used in every one of the functions in class DatbaseAdaptor
 		private $DB;
-		// Make a connection to an existing data based named 'quotes' that has
-		// table quote. In this assignment you will also need a new table named 'users'
 		public function __construct() {
 			$db = 'mysql:dbname=imdb;charset=utf8;host=127.0.0.1';
 			$user = 'root';
@@ -79,7 +76,6 @@
 			$first = $first . "%";
 			$last = $last . "%";
 			$movieID = $this->searchMovie($movie);
-			//$actorID = $this->searchActor($first, $last);
 			$movieIDArray = array(array ("moviename", "actorlist", "year"));
 			if ($movieID != null) {
 				for ($i = 0; $i < count($movieID); $i++) {
@@ -137,6 +133,6 @@
 	} // end class DatabaseAdaptor
 
  $DB = new DatabaseAdaptor();
- $movieArray = $DB->getMatchingMovies("", "chrisggtopher", "lee");
+// $movieArray = $DB->getMatchingMovies("", "", "");
  //var_dump($movieArray);
 	?>
